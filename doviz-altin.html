@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="google-adsense-account" content="ca-pub-8700727943109487">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8700727943109487" crossorigin="anonymous"></script>
+  <title>Döviz ve Altın Çevirici</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --box-gradient: linear-gradient(135deg, #1e293b, #334155);
+      --text: #f1f5f9;
+      --button: #38bdf8;
+      --button-hover: #0ea5e9;
+      --accent: #22c55e;
+      --muted: #94a3b8;
+      --border: rgba(255,255,255,0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%; font-family: 'Inter', sans-serif;
+      background: var(--bg) url('https://plus.unsplash.com/premium_photo-1679397743807-fae5c6a21ace?q=80&w=1932&auto=format&fit=crop') no-repeat center center fixed;
+      background-size: cover; color: var(--text);
+      display: flex; justify-content: center; align-items: flex-start; padding: 20px;
+    }
+    .card {
+      background: var(--box-gradient);
+      border-radius: 20px; box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+      padding: 60px 30px 40px; max-width: 600px; width: 100%;
+      margin: 40px auto; text-align: center; border: 1px solid var(--border);
+      display: none; opacity: 0; transform: translateY(20px);
+      transition: all 0.3s ease-in-out;
+    }
+    h1 { font-size: 1.8rem; margin-bottom: 24px; color: #e2e8f0; }
+    select, input {
+      width: 100%; max-width: 350px; padding: 14px; margin-top: 12px;
+      border: 1px solid var(--border); border-radius: 12px; font-size: 1rem;
+      background: #475569; color: white;
+    }
+    button {
+      background: var(--button); color: white; font-weight: bold;
+      margin-top: 24px; padding: 14px; border: none; border-radius: 12px;
+      font-size: 1.05rem; width: 100%; max-width: 350px; cursor: pointer;
+    }
+    button:hover { background: var(--button-hover); }
+    .result, .rates, .updated { margin-top: 24px; display: none; }
+    .result.show, .rates.show, .updated.show { display: block; }
+    .desc {
+      font-size: 1rem; color: var(--muted); margin-top: 16px;
+      background: rgba(255,255,255,0.05); padding: 14px 18px; border-radius: 10px;
+    }
+    .back-button {
+      position: fixed; max-width: 70px; top: 20px; left: 20px;
+      background-color: var(--button); color: white; border: none;
+      border-radius: 10px; padding: 6px 12px; font-size: 14px; font-weight: 600;
+      cursor: pointer; z-index: 1000; display: none;
+    }
+    .back-button.show { display: inline-block; }
+    .grid {
+      display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 24px;
+    }
+    .cardbox {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 18px 22px; border-radius: 16px;
+      min-width: 280px; flex: 1; max-width: 360px;
+      text-align: left; font-size: 0.95rem;
+      border: 1px solid rgba(255,255,255,0.1); word-wrap: break-word;
+    }
+    .card.active { display: block; opacity: 1; transform: translateY(0); z-index:1; }
+    .glow { box-shadow: 0 0 20px rgba(56, 189, 248, 0.4), 0 0 40px rgba(56, 189, 248, 0.2); transition: box-shadow 0.3s ease; }
+    .cardbox:hover { box-shadow: 0 0 30px rgba(56, 189, 248, 0.7), 0 0 60px rgba(56, 189, 248, 0.4); }
+  </style>
+</head>
+<body>
+  <button class="back-button" id="backBtn" onclick="goTo('home')">← Ana Menü</button>
+
+  <div class="card active" id="home">
+    <h1>💹 Döviz ve Altın Çevirici</h1>
+    <div class="grid">
+      <div id="homeRates" class="rates cardbox glow"></div>
+      <div id="homeGold" class="rates cardbox glow"></div>
+    </div>
+    <div class="desc">Güncel döviz, altın ve kripto fiyatlarını görüntüleyip çevirebilirsiniz.<br></div>
+    <button onclick="goTo('doviz')">💱 Döviz Çevirici</button>
+    <button onclick="goTo('altin')">🏅 Altın Çevirici</button>
+    <button onclick="goTo('kripto')">💎 Kripto Para Çevirici</button>
+  </div>
+
+  <div class="card" id="doviz">
+    <h1>Döviz Çevirici</h1>
+    <select id="fromCurrency"></select>
+    <select id="toCurrency"></select>
+    <input type="number" id="amount" placeholder="Miktar girin">
+    <button onclick="convertCurrency()">Çevir</button>
+    <div class="result" id="currencyResult"></div>
+  </div>
+
+  <div class="card" id="altin">
+    <h1>Altın Çevirici</h1>
+    <select id="goldType">
+      <option value="gram">Gram Altın</option>
+      <option value="ceyrek">Çeyrek Altın</option>
+      <option value="yarim">Yarım Altın</option>
+      <option value="tam">Tam Altın</option>
+      <option value="ons">Ons Altın</option>
+    </select>
+    <input type="number" id="goldAmount" placeholder="Miktar girin">
+    <button onclick="convertGold()">Çevir</button>
+    <div class="result" id="goldResult"></div>
+  </div>
+
+  <div class="card" id="kripto">
+    <h1>Kripto Para Çevirici</h1>
+    <select id="cryptoType">
+      <option value="bitcoin">Bitcoin (BTC)</option>
+      <option value="ethereum">Ethereum (ETH)</option>
+      <option value="tether">Tether (USDT)</option>
+      <option value="ripple">Ripple (XRP)</option>
+      <option value="solana">Solana (SOL)</option>
+    </select>
+    <input type="number" id="cryptoAmount" placeholder="Miktar girin">
+    <button onclick="convertCrypto()">Çevir</button>
+    <div class="result" id="cryptoResult"></div>
+  </div>
+
+  <script>
+    const currencyList = ["USD","EUR","GBP","JPY","CHF","AUD","CAD","TRY","RUB","AED","CNY"];
+    const from = document.getElementById("fromCurrency");
+    const to = document.getElementById("toCurrency");
+
+    currencyList.forEach(c => {
+      [from, to].forEach(select => {
+        const o = document.createElement("option");
+        o.value = o.textContent = c;
+        select.appendChild(o);
+      });
+    });
+    from.value = "USD"; to.value = "TRY";
+
+    function goTo(id) {
+      document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      const backBtn = document.getElementById("backBtn");
+      if (id !== "home") backBtn.classList.add("show");
+      else backBtn.classList.remove("show");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function fetchHome() {
+      try {
+        const res = await fetch("https://open.er-api.com/v6/latest/USD");
+        const d = await res.json();
+        if (d.result === "success") {
+          const list = ["USD", "EUR", "GBP", "CHF"];
+          const rates = list.map(c => `<strong>${c}:</strong> ${(d.rates["TRY"] / d.rates[c]).toFixed(2)} TL`).join("<br>");
+          document.getElementById("homeRates").innerHTML = `<b>💱 Döviz</b><br>${rates}`;
+          document.getElementById("homeRates").classList.add("show");
+        }
+      } catch {}
+      try {
+        const res = await fetch("altin.json");
+        const data = await res.json();
+        let goldHtml = "";
+        for (const key in data)
+          goldHtml += `<strong>${data[key].name}:</strong> ${data[key].alis.toLocaleString("tr-TR", {minimumFractionDigits:2})} TL<br>`;
+        document.getElementById("homeGold").innerHTML = `<b>🏅 Altın</b><br>${goldHtml}`;
+        document.getElementById("homeGold").classList.add("show");
+      } catch {
+        document.getElementById("homeGold").textContent = "Altın verisi alınamadı.";
+        document.getElementById("homeGold").classList.add("show");
+      }
+    }
+
+    async function convertCurrency() {
+      const amount = parseFloat(document.getElementById("amount").value);
+      const fromVal = from.value;
+      const toVal = to.value;
+      const resultDiv = document.getElementById("currencyResult");
+
+      if (isNaN(amount) || amount <= 0) {
+        resultDiv.textContent = "Geçerli miktar girin!";
+        resultDiv.classList.add("show");
+        return;
+      }
+      try {
+        const res = await fetch(`https://open.er-api.com/v6/latest/${fromVal}`);
+        const d = await res.json();
+        if (d.result !== "success" || !d.rates[toVal]) throw "";
+        const rate = d.rates[toVal];
+        resultDiv.innerHTML = `
+          1 ${fromVal} = ${rate.toFixed(4)} ${toVal}<br><br>
+          ${amount} ${fromVal} = ${(amount * rate).toFixed(2)} ${toVal}
+        `;
+        resultDiv.classList.add("show");
+      } catch {
+        resultDiv.textContent = "Döviz verisi alınamadı.";
+        resultDiv.classList.add("show");
+      }
+    }
+
+    const codeMap = { gram:"ALTIN",ceyrek:"CEYREK_YENI",yarim:"YARIM",tam:"TAM",ons:"ONS" };
+    const isim = { gram:"Gram Altın",ceyrek:"Çeyrek Altın",yarim:"Yarım Altın",tam:"Tam Altın",ons:"Ons Altın" };
+
+    async function convertGold() {
+      const amount = parseFloat(document.getElementById("goldAmount").value);
+      const type = document.getElementById("goldType").value;
+      const resultDiv = document.getElementById("goldResult");
+
+      if (isNaN(amount) || amount <= 0) {
+        resultDiv.textContent = "Geçerli miktar girin!";
+        resultDiv.classList.add("show");
+        return;
+      }
+      try {
+        const res = await fetch("altin.json");
+        const data = await res.json();
+        const code = codeMap[type];
+        const name = isim[type];
+        const alis = data[code].alis;
+        const satis = data[code].satis;
+        if (amount > 1) {
+        resultDiv.innerHTML = `
+          ${amount} ${name}:<br>
+          Alış: ${(amount * alis).toLocaleString("tr-TR",{minimumFractionDigits:2})} TL<br>
+          Satış: ${(amount * satis).toLocaleString("tr-TR",{minimumFractionDigits:2})} TL <br><br>
+
+          (1 ${name}: Alış: ${alis.toLocaleString("tr-TR",{minimumFractionDigits:2})} TL | Satış: ${satis.toLocaleString("tr-TR",{minimumFractionDigits:2})} TL)
+        `;
+        }
+        if (amount == 1) {
+                  resultDiv.innerHTML = `
+          ${amount} ${name}:<br>
+          Alış: ${(amount * alis).toLocaleString("tr-TR",{minimumFractionDigits:2})} TL<br>
+          Satış: ${(amount * satis).toLocaleString("tr-TR",{minimumFractionDigits:2})} TL <br><br>
+        `;
+        }
+        resultDiv.classList.add("show");
+      } catch {
+        resultDiv.textContent = "Altın verisi alınamadı.";
+        resultDiv.classList.add("show");
+      }
+    }
+
+    async function convertCrypto() {
+      const amount = parseFloat(document.getElementById("cryptoAmount").value);
+      const type = document.getElementById("cryptoType").value;
+      const resultDiv = document.getElementById("cryptoResult");
+      if (isNaN(amount) || amount <= 0) {
+        resultDiv.textContent = "Geçerli miktar girin!";
+        resultDiv.classList.add("show");
+        return;
+      }
+      try {
+        const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${type}&vs_currencies=try`);
+        const data = await res.json();
+        const price = data[type].try;
+        if (amount == 1){
+          resultDiv.innerHTML = `
+            ${amount} ${type.toUpperCase()} = ${(amount * price).toLocaleString("tr-TR",{minimumFractionDigits:2})} TL
+          `;
+        }
+        if (amount > 1){
+          resultDiv.innerHTML = `
+            ${amount} ${type.toUpperCase()} = ${(amount * price).toLocaleString("tr-TR",{minimumFractionDigits:2})} TL <br><br>
+            (1 ${type.toUpperCase()} = ${price.toLocaleString("tr-TR",{minimumFractionDigits:2})} TL)
+          `;
+        }
+        resultDiv.classList.add("show");
+      } catch {
+        resultDiv.textContent = "Kripto verisi alınamadı.";
+        resultDiv.classList.add("show");
+      }
+    }
+    window.onload = fetchHome;
+  </script> 
+</body>
+</html>
